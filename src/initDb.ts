@@ -19,9 +19,14 @@ async function initializeDatabase() {
     console.log('Database initialized successfully!');
   } catch (error) {
     console.error('Database initialization failed:', error);
-    process.exit(1);
+    if (require.main === module) {
+      process.exit(1);
+    }
+    throw error;
   } finally {
-    await pool.end();
+    if (require.main === module) {
+      await pool.end();
+    }
   }
 }
 

@@ -2,6 +2,7 @@ import express from 'express';
 import dotenv from 'dotenv';
 import { IdentityService } from './identityService';
 import { IdentifyRequest } from './types';
+import { initializeDatabase } from './initDb';
 
 dotenv.config();
 
@@ -14,6 +15,17 @@ const identityService = new IdentityService();
 
 app.get('/health', (req, res) => {
   res.json({ status: 'OK' });
+});
+
+// Database initialization endpoint for Render
+app.post('/init-db', async (req, res) => {
+  try {
+    await initializeDatabase();
+    res.json({ status: 'Database initialized successfully' });
+  } catch (error) {
+    console.error('Database initialization failed:', error);
+    res.status(500).json({ error: 'Database initialization failed' });
+  }
 });
 
 app.post('/identify', async (req, res) => {
