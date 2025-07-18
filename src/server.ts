@@ -33,12 +33,12 @@ app.post('/identify', async (req, res) => {
       });
     }
 
-    // Basic phone validation
-    if (identifyRequest.phoneNumber && !isValidPhoneNumber(identifyRequest.phoneNumber)) {
-      return res.status(400).json({
-        error: 'Invalid phone number format',
-      });
-    }
+    // Basic phone validation (commented out for demo)
+    // if (identifyRequest.phoneNumber && !isValidPhoneNumber(identifyRequest.phoneNumber)) {
+    //   return res.status(400).json({
+    //     error: 'Invalid phone number format',
+    //   });
+    // }
 
     const result = await identityService.identify(identifyRequest);
     res.json(result);
@@ -58,8 +58,9 @@ function isValidEmail(email: string): boolean {
 }
 
 function isValidPhoneNumber(phoneNumber: string): boolean {
-  const phoneRegex = /^[\+]?[1-9][\d\s\-\(\)]{8,}$/;
-  return phoneRegex.test(phoneNumber);
+  // More flexible phone number validation to match requirements
+  const phoneRegex = /^[\+\-\d\s\(\)]+$/;
+  return phoneRegex.test(phoneNumber) && phoneNumber.replace(/\D/g, '').length >= 6;
 }
 
 app.listen(port, () => {

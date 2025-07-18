@@ -1,0 +1,28 @@
+[
+  {
+    "id": 1,
+    "phoneNumber": "123456",
+    "email": "lorraine@hillvalley.edu",
+    "linkPrecedence": "primary",
+    "createdAt": "2025-07-18T07:56:20.083Z",
+    "updatedAt": "2025-07-18T07:56:20.083Z"
+  },
+  {
+    "id": 2,
+    "phoneNumber": "17299029944",
+    "email": "lorraine@hillvalley.edu",
+    "linkedId": 1,
+    "linkPrecedence": "secondary",
+    "createdAt": "2025-07-18T07:56:58.879Z",
+    "updatedAt": "2025-07-18T07:56:58.879Z"
+  },
+  {
+    "id": 3,
+    "phoneNumber": "123456",
+    "email": "mcfly@hillvalley.edu",
+    "linkedId": 1,
+    "linkPrecedence": "secondary",
+    "createdAt": "2025-07-18T07:57:40.422Z",
+    "updatedAt": "2025-07-18T07:57:40.422Z"
+  }
+]

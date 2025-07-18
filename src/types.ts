@@ -3,7 +3,7 @@ export interface Contact {
   phoneNumber?: string;
   email?: string;
   linkedId?: number;
-  linkPrecedence: 'primary' | 'secondary';
+  linkPrecedence: "primary" | "secondary";
   createdAt: Date;
   updatedAt: Date;
   deletedAt?: Date;
