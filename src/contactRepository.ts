@@ -63,18 +63,15 @@ export class ContactRepository {
     if (contactIds.length === 0) return [];
 
     const placeholders = contactIds.map((_, index) => `$${index + 1}`).join(',');
-    const doubledContactIds = [...contactIds, ...contactIds];
-    const placeholders2 = contactIds.map((_, index) => `$${index + contactIds.length + 1}`).join(',');
-    
     const query = `
       SELECT * FROM Contact 
-      WHERE (id IN (${placeholders}) OR linkedId IN (${placeholders2})) 
+      WHERE (id = ANY($1) OR linkedId = ANY($1)) 
       AND deletedAt IS NULL
       ORDER BY createdAt ASC
     `;
 
     try {
-      const result = await pool.query(query, doubledContactIds);
+      const result = await pool.query(query, [contactIds]);
       return result.rows as Contact[];
     } catch (error) {
       console.error('Database error in findLinkedContacts:', error);

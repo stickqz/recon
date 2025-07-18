@@ -15,11 +15,15 @@ export class IdentityService {
       throw new Error('Either email or phoneNumber must be provided');
     }
 
+    console.log('Finding existing contacts for:', { email, phoneNumber });
+    
     // Find existing contacts
     const existingContacts = await this.contactRepo.findByEmailOrPhone(email, phoneNumber);
+    console.log('Found existing contacts:', existingContacts.length);
 
     if (existingContacts.length === 0) {
       // No existing contact found, create a new primary contact
+      console.log('Creating new primary contact');
       const newContactId = await this.contactRepo.create({
         email,
         phoneNumber,
