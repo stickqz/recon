@@ -3,17 +3,24 @@ import * as dotenv from 'dotenv';
 
 dotenv.config();
 
-const dbConfig = {
-  host: process.env.DB_HOST || 'localhost',
-  port: parseInt(process.env.DB_PORT || '3306'),
-  user: process.env.DB_USER || 'root',
-  password: process.env.DB_PASSWORD || 'password',
-  database: process.env.DB_NAME || 'identity_reconciliation',
+// Railway provides DATABASE_URL, but we also support individual env vars
+const getDbConfig = () => {
+  if (process.env.DATABASE_URL) {
+    return process.env.DATABASE_URL;
+  }
+  return {
+    host: process.env.DB_HOST || 'localhost',
+    port: parseInt(process.env.DB_PORT || '3306'),
+    user: process.env.DB_USER || 'root',
+    password: process.env.DB_PASSWORD || 'password',
+    database: process.env.DB_NAME || 'identity_reconciliation',
+  };
 };
 
 export const createConnection = async (): Promise<mysql.Connection> => {
   try {
-    const connection = await mysql.createConnection(dbConfig);
+    const dbConfig = getDbConfig();
+    const connection = await mysql.createConnection(dbConfig as any);
     console.log('Connected to MySQL database');
     return connection;
   } catch (error) {
@@ -23,7 +30,15 @@ export const createConnection = async (): Promise<mysql.Connection> => {
 };
 
 export const pool = mysql.createPool({
-  ...dbConfig,
+  ...(process.env.DATABASE_URL 
+    ? { uri: process.env.DATABASE_URL } 
+    : {
+        host: process.env.DB_HOST || 'localhost',
+        port: parseInt(process.env.DB_PORT || '3306'),
+        user: process.env.DB_USER || 'root',
+        password: process.env.DB_PASSWORD || 'password',
+        database: process.env.DB_NAME || 'identity_reconciliation',
+      }),
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0,
