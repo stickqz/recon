@@ -46,6 +46,56 @@ app.get('/db-test', async (req, res) => {
   }
 });
 
+// System debug endpoint
+app.get('/debug', async (req, res) => {
+  try {
+    const fs = require('fs');
+    const path = require('path');
+    
+    // Check file system
+    const schemaExists = fs.existsSync(path.join(__dirname, '..', 'schema.sql'));
+    const schemaContent = schemaExists ? fs.readFileSync(path.join(__dirname, '..', 'schema.sql'), 'utf8').substring(0, 200) : 'File not found';
+    
+    // Check environment
+    const envInfo = {
+      NODE_ENV: process.env.NODE_ENV,
+      DATABASE_URL: process.env.DATABASE_URL ? 'SET (hidden)' : 'NOT SET',
+      PORT: process.env.PORT,
+      __dirname: __dirname,
+      cwd: process.cwd()
+    };
+    
+    // Check database table existence
+    let tableInfo = {};
+    try {
+      const { pool } = await import('./database');
+      const tables = await pool.query(`
+        SELECT table_name 
+        FROM information_schema.tables 
+        WHERE table_schema = 'public'
+      `);
+      tableInfo = { tables: tables.rows.map(r => r.table_name) };
+    } catch (dbError) {
+      tableInfo = { error: dbError instanceof Error ? dbError.message : 'Unknown DB error' };
+    }
+    
+    res.json({
+      status: 'Debug info',
+      environment: envInfo,
+      files: {
+        schemaExists,
+        schemaPreview: schemaContent
+      },
+      database: tableInfo
+    });
+  } catch (error) {
+    res.status(500).json({
+      error: 'Debug failed',
+      details: error instanceof Error ? error.message : 'Unknown error'
+    });
+  }
+});
+
 app.post('/identify', async (req, res) => {
   try {
     const identifyRequest: IdentifyRequest = req.body;
