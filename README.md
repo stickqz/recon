@@ -2,9 +2,21 @@
 
 Bitespeed backend task implementation in TypeScript
 
+[![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/template/mysql-nodejs?referralCode=alphasec)
+
 ## Overview
 
 This API identifies and reconciles customer identities based on email addresses and phone numbers. When customers provide contact information, the system automatically links related contacts and maintains a primary/secondary contact relationship.
+
+## 🚀 Quick Deploy
+
+**Option 1: Railway (Recommended)**
+- Click the "Deploy on Railway" button above
+- Add MySQL database service  
+- Deploy automatically!
+
+**Option 2: Manual Setup**
+- See [DEPLOYMENT.md](DEPLOYMENT.md) for detailed guides
 
 ## Features
 
