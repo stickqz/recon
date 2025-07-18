@@ -91,7 +91,13 @@ export class IdentityService {
       return null;
     }
     
-    // Find the oldest contact (first created)
+    // First, look for a contact explicitly marked as primary
+    const primaryContact = contacts.find(c => c.linkPrecedence === 'primary');
+    if (primaryContact) {
+      return primaryContact;
+    }
+    
+    // If no primary found, return the oldest contact
     const sortedContacts = contacts.sort((a, b) => 
       new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
     );
@@ -135,14 +141,20 @@ export class IdentityService {
   private buildResponse(contacts: Contact[]): IdentifyResponse {
     console.log('Building response with contacts:', contacts.length);
     
-    const primaryContact = contacts.find(c => c.linkPrecedence === 'primary');
+    let primaryContact = contacts.find(c => c.linkPrecedence === 'primary');
     console.log('Primary contact in buildResponse:', primaryContact ? primaryContact.id : 'none');
-    
-    if (!primaryContact) {
-      throw new Error('No primary contact found when building response');
+
+    // Fallback: if no primary, use the oldest contact and treat as primary
+    if (!primaryContact && contacts.length > 0) {
+      primaryContact = contacts.slice().sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime())[0];
+      console.warn('No contact marked as primary, falling back to oldest contact:', primaryContact.id);
     }
-    
-    const secondaryContacts = contacts.filter(c => c.linkPrecedence === 'secondary');
+
+    if (!primaryContact) {
+      throw new Error('No contact found to use as primary');
+    }
+
+    const secondaryContacts = contacts.filter(c => c.linkPrecedence === 'secondary' && c.id !== primaryContact.id);
 
     const emails = Array.from(new Set(
       contacts.map(c => c.email).filter((email): email is string => Boolean(email))
