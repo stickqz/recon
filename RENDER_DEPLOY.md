@@ -103,20 +103,32 @@ curl -X POST https://your-app-name.onrender.com/identify \
 
 ### Common Issues
 
-1. **App won't start**:
+1. **Build fails with "Cannot find module" errors**:
+   - ✅ **Fixed**: Updated render.yaml to use `npm run render-build`
+   - ✅ **Fixed**: Added explicit Node.js types in tsconfig.json
+   - ✅ **Fixed**: Added .nvmrc to specify Node.js 18
+   - Check that dependencies are correctly listed in package.json
+
+2. **App won't start**:
    - Check logs in Render dashboard
    - Ensure `npm run build` completes successfully
    - Verify `DATABASE_URL` is set
 
-2. **Database connection fails**:
+3. **Database connection fails**:
    - Check PostgreSQL service is running
    - Verify `DATABASE_URL` format
    - Ensure SSL is enabled (automatic on Render)
 
-3. **App sleeps on free plan**:
+4. **App sleeps on free plan**:
    - Expected behavior after 15 min inactivity
    - Upgrade to paid plan for always-on
    - Or use uptime monitoring services
+
+### Build Process
+The build process now includes:
+1. `npm install` (installs all dependencies including devDependencies)
+2. `npm run build` (compiles TypeScript)
+3. Dependencies are properly resolved with Node.js 18
 
 ### Performance Tips
 - Use connection pooling (already implemented)
