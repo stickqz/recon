@@ -56,6 +56,23 @@ app.get('/debug', async (req, res) => {
     const schemaExists = fs.existsSync(path.join(__dirname, '..', 'schema.sql'));
     const schemaContent = schemaExists ? fs.readFileSync(path.join(__dirname, '..', 'schema.sql'), 'utf8').substring(0, 200) : 'File not found';
     
+    // Parse DATABASE_URL safely for connection info
+    let connectionInfo = {};
+    if (process.env.DATABASE_URL) {
+      try {
+        const url = new URL(process.env.DATABASE_URL);
+        connectionInfo = {
+          host: url.hostname,
+          port: url.port,
+          database: url.pathname.substring(1),
+          username: url.username,
+          // password: '[HIDDEN]' // Never show password in logs
+        };
+      } catch (e) {
+        connectionInfo = { error: 'Invalid DATABASE_URL format' };
+      }
+    }
+    
     // Check environment
     const envInfo = {
       NODE_ENV: process.env.NODE_ENV,
@@ -82,6 +99,7 @@ app.get('/debug', async (req, res) => {
     res.json({
       status: 'Debug info',
       environment: envInfo,
+      connectionInfo,
       files: {
         schemaExists,
         schemaPreview: schemaContent
