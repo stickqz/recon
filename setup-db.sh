@@ -1,21 +1,21 @@
 #!/bin/bash
 
-# MySQL Database Setup Script for Identity Reconciliation
+# PostgreSQL Database Setup Script for Identity Reconciliation
 
-echo "Setting up MySQL database for Identity Reconciliation..."
+echo "Setting up PostgreSQL database for Identity Reconciliation..."
 
-# Default MySQL configuration
+# Default PostgreSQL configuration
 DB_HOST=${DB_HOST:-localhost}
-DB_PORT=${DB_PORT:-3306}
-DB_USER=${DB_USER:-root}
+DB_PORT=${DB_PORT:-5432}
+DB_USER=${DB_USER:-postgres}
 DB_PASSWORD=${DB_PASSWORD:-password}
 DB_NAME=${DB_NAME:-identity_reconciliation}
 
 echo "Creating database: $DB_NAME"
-mysql -h $DB_HOST -P $DB_PORT -u $DB_USER -p$DB_PASSWORD -e "CREATE DATABASE IF NOT EXISTS $DB_NAME;"
+PGPASSWORD=$DB_PASSWORD createdb -h $DB_HOST -p $DB_PORT -U $DB_USER $DB_NAME 2>/dev/null || echo "Database may already exist"
 
 echo "Creating tables from schema.sql..."
-mysql -h $DB_HOST -P $DB_PORT -u $DB_USER -p$DB_PASSWORD $DB_NAME < schema.sql
+PGPASSWORD=$DB_PASSWORD psql -h $DB_HOST -p $DB_PORT -U $DB_USER -d $DB_NAME -f schema.sql
 
 echo "Database setup complete!"
 echo ""

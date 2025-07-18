@@ -1,8 +1,8 @@
 # Identity Reconciliation API
 
-Bitespeed backend task implementation in TypeScript
+Bitespeed backend task implementation in TypeScript with PostgreSQL
 
-[![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/template/mysql-nodejs?referralCode=alphasec)
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/yourusername/identity-reconciliation-api)
 
 ## Overview
 
@@ -10,20 +10,19 @@ This API identifies and reconciles customer identities based on email addresses 
 
 ## 🚀 Quick Deploy
 
-**Option 1: Railway (Recommended)**
-- Click the "Deploy on Railway" button above
-- Add MySQL database service  
-- Deploy automatically!
+**Option 1: Render (Recommended)**
+- Click the "Deploy to Render" button above
+- Or see [RENDER_DEPLOY.md](RENDER_DEPLOY.md) for detailed guide
 
-**Option 2: Manual Setup**
-- See [DEPLOYMENT.md](DEPLOYMENT.md) for detailed guides
+**Option 2: Other Platforms**
+- See [DEPLOYMENT.md](DEPLOYMENT.md) for Railway, Docker, etc.
 
 ## Features
 
 - **Identity Reconciliation**: Links contacts based on shared email or phone number
 - **Primary/Secondary Relationships**: Maintains contact hierarchy
 - **TypeScript**: Full type safety
-- **MySQL Database**: Reliable data persistence
+- **PostgreSQL Database**: Reliable data persistence with advanced features
 - **Input Validation**: Email and phone number format validation
 
 ## Setup

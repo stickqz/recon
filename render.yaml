@@ -1,0 +1,19 @@
+version: 2
+services:
+  - type: web
+    name: identity-reconciliation-api
+    env: node
+    plan: free
+    buildCommand: npm run build
+    startCommand: npm start
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        fromDatabase:
+          name: identity-reconciliation-db
+          property: connectionString
+databases:
+  - name: identity-reconciliation-db
+    plan: free
