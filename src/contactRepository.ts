@@ -62,6 +62,8 @@ export class ContactRepository {
   async findLinkedContacts(contactIds: number[]): Promise<Contact[]> {
     if (contactIds.length === 0) return [];
 
+    console.log('Finding linked contacts for IDs:', contactIds);
+    
     const query = `
       SELECT * FROM Contact 
       WHERE (id = ANY($1) OR linkedId = ANY($1)) 
@@ -71,6 +73,7 @@ export class ContactRepository {
 
     try {
       const result = await pool.query(query, [contactIds]);
+      console.log('Found linked contacts query result:', result.rows.length);
       return result.rows as Contact[];
     } catch (error) {
       console.error('Database error in findLinkedContacts:', error);

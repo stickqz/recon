@@ -42,15 +42,23 @@ export class IdentityService {
 
     // Get all linked contacts
     const allContactIds = existingContacts.map(c => c.id);
-    const linkedContacts = await this.contactRepo.findLinkedContacts(allContactIds);
+    let linkedContacts = await this.contactRepo.findLinkedContacts(allContactIds);
     console.log('Found linked contacts:', linkedContacts.length);
 
     // Find the primary contact (oldest one)
-    const primaryContact = this.findPrimaryContact(linkedContacts);
+    let primaryContact = this.findPrimaryContact(linkedContacts);
     console.log('Primary contact found:', primaryContact ? primaryContact.id : 'none');
 
+    // If no primary contact found, create one
     if (!primaryContact) {
-      throw new Error('No primary contact found in linked contacts');
+      console.log('No primary contact found, creating new primary contact');
+      const newContactId = await this.contactRepo.create({
+        email,
+        phoneNumber,
+        linkPrecedence: 'primary',
+      });
+      linkedContacts = await this.contactRepo.findLinkedContacts([newContactId]);
+      return this.buildResponse(linkedContacts);
     }
 
     // Check if we need to create a new secondary contact
@@ -125,7 +133,15 @@ export class IdentityService {
   }
 
   private buildResponse(contacts: Contact[]): IdentifyResponse {
-    const primaryContact = contacts.find(c => c.linkPrecedence === 'primary')!;
+    console.log('Building response with contacts:', contacts.length);
+    
+    const primaryContact = contacts.find(c => c.linkPrecedence === 'primary');
+    console.log('Primary contact in buildResponse:', primaryContact ? primaryContact.id : 'none');
+    
+    if (!primaryContact) {
+      throw new Error('No primary contact found when building response');
+    }
+    
     const secondaryContacts = contacts.filter(c => c.linkPrecedence === 'secondary');
 
     const emails = Array.from(new Set(
