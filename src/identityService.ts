@@ -58,7 +58,7 @@ export class IdentityService {
         linkPrecedence: 'primary',
       });
       linkedContacts = await this.contactRepo.findLinkedContacts([newContactId]);
-      return this.buildResponse(linkedContacts);
+      return await this.buildResponse(linkedContacts);
     }
 
     // Check if we need to create a new secondary contact
@@ -75,7 +75,7 @@ export class IdentityService {
 
       // Refresh linked contacts
       const refreshedContacts = await this.contactRepo.findLinkedContacts([primaryContact.id]);
-      return this.buildResponse(refreshedContacts);
+      return await this.buildResponse(refreshedContacts);
     }
 
     // Handle potential consolidation of primary contacts
@@ -83,7 +83,7 @@ export class IdentityService {
 
     // Get final state of contacts
     const finalContacts = await this.contactRepo.findLinkedContacts([primaryContact.id]);
-    return this.buildResponse(finalContacts);
+    return await this.buildResponse(finalContacts);
   }
 
   private findPrimaryContact(contacts: Contact[]): Contact | null {
@@ -138,7 +138,7 @@ export class IdentityService {
     }
   }
 
-  private buildResponse(contacts: Contact[]): IdentifyResponse {
+  private async buildResponse(contacts: Contact[]): Promise<IdentifyResponse> {
     console.log('Building response with contacts:', contacts.length);
     
     let primaryContact = contacts.find(c => c.linkPrecedence === 'primary');
@@ -148,6 +148,14 @@ export class IdentityService {
     if (!primaryContact && contacts.length > 0) {
       primaryContact = contacts.slice().sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime())[0];
       console.warn('No contact marked as primary, falling back to oldest contact:', primaryContact.id);
+      
+      // Self-heal: Update the database to mark this contact as primary
+      try {
+        await this.contactRepo.updateToPrimary(primaryContact.id);
+        console.log('Auto-fixed: Promoted contact', primaryContact.id, 'to primary');
+      } catch (error) {
+        console.error('Failed to auto-fix primary contact:', error);
+      }
     }
 
     if (!primaryContact) {

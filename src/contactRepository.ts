@@ -110,4 +110,19 @@ export class ContactRepository {
       throw error;
     }
   }
+
+  async updateToPrimary(id: number): Promise<void> {
+    const query = `
+      UPDATE Contact 
+      SET linkPrecedence = 'primary', linkedId = NULL, updatedAt = CURRENT_TIMESTAMP
+      WHERE id = $1
+    `;
+
+    try {
+      await pool.query(query, [id]);
+    } catch (error) {
+      console.error('Database error in updateToPrimary:', error);
+      throw error;
+    }
+  }
 }
