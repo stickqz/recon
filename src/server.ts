@@ -1,9 +1,12 @@
 import express from 'express';
+import dotenv from 'dotenv';
 import { IdentityService } from './identityService';
 import { IdentifyRequest } from './types';
 
+dotenv.config();
+
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 3000;
 
 app.use(express.json());
 
