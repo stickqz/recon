@@ -43,9 +43,15 @@ export class IdentityService {
     // Get all linked contacts
     const allContactIds = existingContacts.map(c => c.id);
     const linkedContacts = await this.contactRepo.findLinkedContacts(allContactIds);
+    console.log('Found linked contacts:', linkedContacts.length);
 
     // Find the primary contact (oldest one)
     const primaryContact = this.findPrimaryContact(linkedContacts);
+    console.log('Primary contact found:', primaryContact ? primaryContact.id : 'none');
+
+    if (!primaryContact) {
+      throw new Error('No primary contact found in linked contacts');
+    }
 
     // Check if we need to create a new secondary contact
     const needNewContact = this.shouldCreateNewContact(linkedContacts, email, phoneNumber);
@@ -72,7 +78,11 @@ export class IdentityService {
     return this.buildResponse(finalContacts);
   }
 
-  private findPrimaryContact(contacts: Contact[]): Contact {
+  private findPrimaryContact(contacts: Contact[]): Contact | null {
+    if (contacts.length === 0) {
+      return null;
+    }
+    
     // Find the oldest contact (first created)
     const sortedContacts = contacts.sort((a, b) => 
       new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()

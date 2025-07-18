@@ -62,7 +62,6 @@ export class ContactRepository {
   async findLinkedContacts(contactIds: number[]): Promise<Contact[]> {
     if (contactIds.length === 0) return [];
 
-    const placeholders = contactIds.map((_, index) => `$${index + 1}`).join(',');
     const query = `
       SELECT * FROM Contact 
       WHERE (id = ANY($1) OR linkedId = ANY($1)) 
