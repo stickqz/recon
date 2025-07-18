@@ -24,7 +24,25 @@ app.post('/init-db', async (req, res) => {
     res.json({ status: 'Database initialized successfully' });
   } catch (error) {
     console.error('Database initialization failed:', error);
-    res.status(500).json({ error: 'Database initialization failed' });
+    res.status(500).json({ 
+      error: 'Database initialization failed', 
+      details: error instanceof Error ? error.message : 'Unknown error' 
+    });
+  }
+});
+
+// Database connection test endpoint
+app.get('/db-test', async (req, res) => {
+  try {
+    const { pool } = await import('./database');
+    const result = await pool.query('SELECT NOW() as current_time');
+    res.json({ status: 'Database connected', time: result.rows[0].current_time });
+  } catch (error) {
+    console.error('Database connection failed:', error);
+    res.status(500).json({ 
+      error: 'Database connection failed', 
+      details: error instanceof Error ? error.message : 'Unknown error' 
+    });
   }
 });
 
