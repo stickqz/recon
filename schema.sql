@@ -1,6 +1,3 @@
-CREATE DATABASE IF NOT EXISTS identity_reconciliation;
-USE identity_reconciliation;
-
 -- PostgreSQL Schema for Identity Reconciliation
 
 CREATE TABLE IF NOT EXISTS Contact (
